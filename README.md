@@ -20,7 +20,7 @@ fund trades at a **premium to its true value that drifts and mean-reverts** — 
 the premia move differently across funds. The exploitable edge is *relative*: hold
 the fund that is cheapest versus fair value and its own norm, rotate as that
 changes. The catch is that during A-share hours the US underlying is **closed**, so
-the exchange's intraday IOPV is stale; the premium can only be measured against a
+the exchange's intraday IOPV(Indicative Optimized Portfolio Value) is stale; the premium can only be measured against a
 **reconstructed** fair value. Getting that reconstruction right is the whole game.
 
 ## If you read one thing
