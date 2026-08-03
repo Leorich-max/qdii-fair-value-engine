@@ -9,7 +9,7 @@ description = "Fair-value engine and relative-value research toolkit for China-l
 readme = "README.md"
 requires-python = ">=3.11"
 license = { file = "LICENSE" }
-authors = [{ name = "<AUTHOR NAME>" }]
+authors = [{ name = "leolisingapore-hue" }]
 keywords = ["quant", "etf", "qdii", "fair-value", "relative-value", "market-microstructure"]
 
 dependencies = [
