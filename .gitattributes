@@ -1,0 +1,4 @@
+# Normalise line endings to LF in the repository (silences CRLF churn on Windows).
+* text=auto eol=lf
+*.csv text eol=lf
+*.ipynb text eol=lf

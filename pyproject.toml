@@ -1,0 +1,53 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "qdii-fair-value-engine"
+version = "0.1.0"
+description = "Fair-value engine and relative-value research toolkit for China-listed NASDAQ-100 QDII ETFs (research artifact; strategy parameters withheld)."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { file = "LICENSE" }
+authors = [{ name = "<AUTHOR NAME>" }]
+keywords = ["quant", "etf", "qdii", "fair-value", "relative-value", "market-microstructure"]
+
+dependencies = [
+    "numpy==2.1.3",
+    "pandas==2.2.3",
+    "scipy==1.14.1",
+    "pyyaml==6.0.2",
+]
+
+[project.optional-dependencies]
+notebooks = [
+    "matplotlib==3.9.2",
+    "jupyter==1.1.1",
+    "notebook==7.2.2",
+]
+dev = [
+    "pytest==8.3.3",
+    "ruff==0.6.9",
+    "black==24.10.0",
+    "pre-commit==4.0.1",
+    "nbstripout==0.7.1",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/qdii_fve"]
+
+[tool.black]
+line-length = 100
+target-version = ["py311"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+# pycodestyle, pyflakes, isort, pep8-naming, pyupgrade, flake8-bugbear
+select = ["E", "F", "I", "N", "UP", "B"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

@@ -1,0 +1,41 @@
+# =============================================================================
+# EXAMPLE configuration — PLACEHOLDER VALUES, NOT the production parameters.
+#
+# The real, calibrated parameters (lookback windows, switch thresholds,
+# sizing coefficients, and the actual ETF universe) are deliberately WITHHELD.
+# See README.md -> "What is deliberately withheld, and why".
+#
+# To run locally: copy this file to `config.yaml` (which is gitignored) and,
+# if you want to reproduce real figures, point `data.source` at your own feed.
+# =============================================================================
+
+universe:
+  # Anonymised placeholders. The real ticker set (twelve China-listed
+  # NASDAQ-100 QDII ETFs) and any weights are NOT published here.
+  etf_ids: [ETF_01, ETF_02, ETF_03, ETF_04, ETF_05, ETF_06,
+            ETF_07, ETF_08, ETF_09, ETF_10, ETF_11, ETF_12]
+
+signal:
+  # PLACEHOLDER values — chosen to be plausible but are NOT the deployed ones.
+  norm_lookback_days: 45          # deployed value withheld
+  switch_threshold_bps: 50        # deployed value withheld
+  rebalance_time: "14:50"         # evaluation time (public design choice)
+
+fair_value:
+  underlying: ndx_futures         # NASDAQ-100 futures as the intraday driver
+  fx_pair: USDCNH
+  fx_reference: cfets_central_parity
+
+costs:
+  # PLACEHOLDER cost ladder rungs.
+  commission_bps_per_side: 2.0    # placeholder
+  slippage_model: corwin_schultz  # per-leg half-spread estimate
+  ladder_bps: [0, 1, 12, 20]      # gross -> ... -> conservative
+
+capacity:
+  max_participation_of_adv: 0.05  # cap trade size at <=5% of average daily volume
+
+data:
+  source: synthetic               # "synthetic" | "<your_provider>"
+  path: data/sample               # synthetic sample ships with the repo
+  seed: 20260101                  # deterministic sample generation

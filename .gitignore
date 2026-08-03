@@ -1,0 +1,28 @@
+# ---- data: never commit real/vendor data; keep ONLY the synthetic sample ----
+data/*
+!data/sample/
+
+# ---- secrets & real, calibrated parameters (deliberately withheld) ----
+config.yaml
+.env
+*.key
+sckey.txt
+
+# ---- local-only, never publish ----
+interview_prep.md
+
+# ---- python ----
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# ---- notebooks: never commit executed outputs ----
+.ipynb_checkpoints/
