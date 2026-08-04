@@ -65,10 +65,15 @@ produce the 3.2 bp are not in the sample.
 
 Universe and parameter choices were stress-tested (the wider universe was kept over
 a higher-Sharpe narrow one; parameter sweeps in the deployment's own frame showed
-the higher-scoring cells were knife-edge and were rejected). But this was done
+the higher-scoring cells were knife-edge and were rejected). Most of this was done
 **in-sample**. A proper **walk-forward** — choose parameters on past data only,
-score out-of-sample — has not been run. Until it has, "the deployed parameters are
-robust" is a reasoned judgement, not a proven one.
+score out-of-sample — *has now been run*: across ~7 anchored/rolling folds over a
+~1.4-year blind span, the strategy retained an **efficiency ratio of 0.63–0.79** of
+its in-sample ceiling, landed at **+6–8%/yr excess vs the basket, positive in every
+fold**, and the blindly re-selected parameters clustered around the deployed choice.
+That upgrades "the deployed parameters are robust" from a reasoned judgement toward a
+tested one — but only within the single premium regime of item 2: it shows *not
+overfit to the sample*, not *survives a premium deflation*.
 
 ## 7. Data and reproducibility
 
@@ -82,7 +87,9 @@ them into a clean, same-vintage panel is non-trivial and is left to the reader.
 
 Stated plainly rather than implied away:
 
-- No walk-forward / out-of-sample parameter validation (item 6).
+- Walk-forward / out-of-sample parameter validation **has now been run** (item 6); it
+  retained ~0.63–0.79 of the in-sample edge and was positive in every fold, but is still
+  confined to one premium regime.
 - The live paper record is too short to draw conclusions from.
 - Capacity λ uses tick-rule signing, not trade-level signing.
 - Transaction costs are modelled (Corwin-Schultz + a ladder); they are not measured

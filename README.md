@@ -76,11 +76,12 @@ Excess return versus the 12-fund equal-weight basket (not QQQ), ~2 years. Each f
 | Intraday snapback — executable estimate | +7.9%/yr (next-session, Corwin-Schultz fills) | backtested · paper-only | [NB02](notebooks/02_bounce_decomposition.ipynb) |
 | Bid-ask bounce decomposition | +16.0% → +7.9%/yr (~half the apparent edge was bounce) | backtested | [NB02](notebooks/02_bounce_decomposition.ipynb) |
 | Universe choice (overfitting rejection) | 12-fund Sharpe 1.16 over in-sample 7-fund 1.56; IC +0.33 vs +0.32 | backtested | [NB03](notebooks/03_universe_selection_overfitting.ipynb) |
+| Walk-forward (out-of-sample) | +6–8%/yr excess retained across ~7 blind folds (~1.4 yr); efficiency 0.63–0.79 vs the in-sample ceiling; positive in every fold | backtested (OOS) | [limits](LIMITATIONS.md) |
 | Capacity (Kyle's λ) | λ ≈ 0.5–3.9 bp per 1M CNY; capacity ~single-digit to ~15M CNY | backtested | [`src`](src/qdii_fve/capacity) |
 
 ## Limitations
 
-The full list is in [LIMITATIONS.md](LIMITATIONS.md). In brief: the ~2-year sample carried a premium-expansion tailwind, so absolute returns are not a QQQ substitute and the edge is quoted as excess vs the basket; sub-period splits are sub-periods of one sample, not independent regimes; every figure is backtested (a short forward paper record exists but is too brief to headline); capacity is low and decays with size; and an out-of-sample walk-forward is noted as the next step, not yet run.
+The full list is in [LIMITATIONS.md](LIMITATIONS.md). In brief: the ~2-year sample carried a premium-expansion tailwind, so absolute returns are not a QQQ substitute and the edge is quoted as excess vs the basket; sub-period splits are sub-periods of one sample, not independent regimes; every figure is backtested (a short forward paper record exists but is too brief to headline); capacity is low and decays with size; and an out-of-sample walk-forward **has now been run** — it retained ~0.63–0.79 of the in-sample edge and stayed positive in every fold, though still within one premium regime.
 
 ## What is withheld, and why
 
