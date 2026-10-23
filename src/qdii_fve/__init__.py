@@ -1,9 +1,8 @@
-"""qdii_fve — fair-value engine and relative-value research toolkit.
+"""qdii_fve — fair-value engine for China-listed NASDAQ-100 QDII ETFs.
 
-Research artifact for a relative-value strategy on China-listed NASDAQ-100
-QDII ETFs. The published code documents the *class* of signal and the modelling
-and microstructure methods; the calibrated strategy parameters and the specific
-ETF universe are withheld (loaded from a gitignored ``config.yaml``).
+Reconstructs a current fair value from the last published NAV, the QQQ move since
+the NAV valuation date and the USDCNH move against that date's CFETS central parity,
+and measures each ETF's premium to it. Synthetic sample data only; no vendor data.
 """
 
 __version__ = "0.1.0"

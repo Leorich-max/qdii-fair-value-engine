@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nasdaq-100 QDII Premiums</title>
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1d1b;--mut:#6b6a66;--line:#e4e1da;--card:#fff;--p:#1f5fa8;--fv:#c26a1b;--pos:#b23b3b;
+--neg:#2f7d4f;--hl:#1d1d1b;--banner:#fff6e0;--bannerln:#e6c77a;--input:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#161615;--fg:#ecebe7;--mut:#a3a19b;--line:#33322f;
+--card:#1f1f1d;--p:#6aa5ea;--fv:#e39a52;--pos:#e07070;--neg:#5fbf86;--hl:#ecebe7;--banner:#2b2516;--bannerln:#6b5a2a;--input:#262624}}
+:root[data-theme="dark"]{--bg:#161615;--fg:#ecebe7;--mut:#a3a19b;--line:#33322f;--card:#1f1f1d;--p:#6aa5ea;--fv:#e39a52;
+--pos:#e07070;--neg:#5fbf86;--hl:#ecebe7;--banner:#2b2516;--bannerln:#6b5a2a;--input:#262624}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 -apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+main{max-width:1000px;margin:0 auto;padding:24px 16px 56px}
+h1{font-size:24px;margin:0 0 4px}h2{font-size:16px;margin:0 0 8px}
+.sub{color:var(--mut);margin:0 0 14px}
+.banner{background:var(--banner);border:1px solid var(--bannerln);border-radius:10px;padding:10px 14px;font-size:13.5px;margin-bottom:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:12px 0}
+.controls{display:flex;flex-wrap:wrap;gap:14px;align-items:end}
+label{font-size:12px;color:var(--mut);display:block;margin-bottom:3px;text-transform:uppercase;letter-spacing:.3px}
+select,input[type=number]{background:var(--input);color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:6px 8px;font:inherit}
+input[type=range]{width:100%}
+.range{flex:1;min-width:220px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px 16px;font-size:13.5px}
+.stats b{display:block;color:var(--mut);font-size:11.5px;text-transform:uppercase;letter-spacing:.3px;font-weight:600}
+.num{font-variant-numeric:tabular-nums}
+svg{display:block;width:100%;height:auto}
+svg text{fill:var(--mut);font-size:11px}
+.lg{display:flex;flex-wrap:wrap;gap:14px;font-size:12.5px;color:var(--mut);margin-top:4px}
+.lg i{display:inline-block;width:14px;height:3px;vertical-align:middle;margin-right:5px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:760px){.grid2{grid-template-columns:1fr}}
+.calc{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.calc input{width:100%}
+.out{margin-top:12px;font-size:14px}
+.out .big{font-size:22px;font-weight:600}
+.det{color:var(--mut);font-size:12.5px;margin-top:6px}
+.err{color:var(--pos)}
+footer{color:var(--mut);font-size:12.5px;margin-top:28px}
+</style>
+</head>
+<body>
+<main>
+  <h1>Nasdaq-100 QDII ETF premiums</h1>
+  <p class="sub">Twelve China-listed ETFs that hold the Nasdaq-100. Each day's fair value is rebuilt from the fund's last
+    published NAV, QQQ's move since that NAV's valuation date and the CFETS USD/CNY parity, and compared with the closing
+    price.</p>
+  <div class="banner" id="banner"></div>
+
+  <div class="card controls">
+    <div><label for="fund">Fund</label><select id="fund"></select></div>
+    <div class="range"><label for="from">From <span id="fromLbl" class="num"></span></label><input id="from" type="range" min="0" value="0"></div>
+    <div class="range"><label for="to">To <span id="toLbl" class="num"></span></label><input id="to" type="range" min="0"></div>
+  </div>
+
+  <div class="card">
+    <h2>Price vs fair value</h2>
+    <div id="chartPrice"></div>
+    <div class="lg"><span><i style="background:var(--p)"></i>traded price</span><span><i style="background:var(--fv)"></i>fair value</span></div>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <h2>Premium to fair value (bp)</h2>
+      <div id="chartPrem"></div>
+      <div class="det">Hover a chart to move the date; the panel on the right follows.</div>
+    </div>
+    <div class="card">
+      <h2>All funds on <span id="xsDate" class="num"></span></h2>
+      <div id="chartXs"></div>
+      <div class="det">Premium of each fund on the selected date, in fund order. Above zero: priced above fair value.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2 id="statsTitle">Selected date</h2>
+    <div class="stats" id="stats"></div>
+    <div class="det">Validation: each published NAV return against QQQ's total return times the parity move over the
+      same valuation dates (standard deviation, mean absolute error and count since December 2023). A small residual means the
+      valuation-date and currency conventions explain the published NAVs; it is not a measure of trading profit.</div>
+  </div>
+
+  <div class="card">
+    <h2>Calculator</h2>
+    <div class="calc" id="calc">
+      <div><label for="c_nav">Published NAV (valuation date D)</label><input id="c_nav" type="number" step="any"></div>
+      <div><label for="c_uref">QQQ close on D</label><input id="c_uref" type="number" step="any"></div>
+      <div><label for="c_unow">QQQ latest close</label><input id="c_unow" type="number" step="any"></div>
+      <div><label for="c_pref">CFETS parity on D</label><input id="c_pref" type="number" step="any"></div>
+      <div><label for="c_fxnow">FX now (parity or spot)</label><input id="c_fxnow" type="number" step="any"></div>
+      <div><label for="c_px">ETF price</label><input id="c_px" type="number" step="any"></div>
+    </div>
+    <div class="out" id="calcOut"></div>
+    <div class="det" id="calcNote">FV = NAV(D) × QQQ latest / QQQ on D × FX now / CFETS parity on D. Same formula as
+      <code>reconstruct_fair_value</code> in the Python package (tested against it). The charts use QQQ total return
+      (dividends added back); this calculator uses plain closes.</div>
+  </div>
+
+  <div class="card">
+    <h2>What this page does and does not show</h2>
+    <ul class="det" style="margin:4px 0 0 18px;padding:0">
+      <li>Prices are A-share closing prices. QQQ is its last US close before that day, so moves in overnight QQQ trading and
+        Nasdaq futures during Asian hours are <b>not</b> included; on a big overnight day part of the "premium" is that move.</li>
+      <li>FX uses the CFETS central parity of the day, the same basis funds use for NAV; market USD/CNH can differ by tens of
+        basis points.</li>
+      <li>The NAV used is the latest valuation date before each day. The source gives no publication time, so for history this
+        is a convention; from the first daily run onward the page records when each NAV was first seen.</li>
+      <li>Days with a missing input are left as gaps. Nothing here is investment advice or a trading signal.</li>
+    </ul>
+  </div>
+
+  <footer id="footer"></footer>
+</main>
+
+<script src="fv.js"></script>
+<script src="data.js"></script>
+<script>
+"use strict";
+const D = window.FV_DATA;
+const funds = Object.keys(D.funds).sort();
+const $ = (id) => document.getElementById(id);
+const fmt = (v, d) => (v === null || v === undefined || !isFinite(v)) ? "—" : v.toFixed(d);
+const sgn = (v, d) => (v === null || !isFinite(v)) ? "—" : (v >= 0 ? "+" : "") + v.toFixed(d);
+let state = { fund: funds.includes("513100") ? "513100" : funds[0], from: 0, to: D.dates.length - 1, cursor: D.dates.length - 1 };
+
+function niceTick(span, target) {
+  const raw = span > 0 ? span / target : 1;
+  const mag = Math.pow(10, Math.floor(Math.log10(raw)));
+  for (const m of [1, 2, 2.5, 5, 10]) if (m * mag >= raw) return m * mag;
+  return 10 * mag;
+}
+
+function runs(vals) {
+  const out = []; let cur = [];
+  vals.forEach((v, i) => { if (v === null) { if (cur.length) out.push(cur); cur = []; } else cur.push([i, v]); });
+  if (cur.length) out.push(cur);
+  return out;
+}
+
+function lineChart(el, idx, series, opts) {
+  const W = 940, H = opts.h || 240, L = 56, R = 12, T = 10, B = 24;
+  const vals = series.flatMap(s => idx.map(i => s.values[i]).filter(v => v !== null));
+  if (opts.zero) vals.push(0);
+  if (vals.length < 2) { el.innerHTML = '<p class="det">No data in this range.</p>'; return; }
+  let lo = Math.min(...vals), hi = Math.max(...vals);
+  const pad = (hi - lo) * 0.08 || Math.max(Math.abs(hi), 1) * 0.05; lo -= pad; hi += pad;
+  const x = (k) => L + (W - L - R) * k / Math.max(idx.length - 1, 1);
+  const y = (v) => T + (H - T - B) * (hi - v) / (hi - lo);
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${opts.label}">`;
+  const tick = niceTick(hi - lo, 5);
+  for (let t = Math.ceil(lo / tick) * tick; t <= hi + 1e-12; t += tick) {
+    s += `<line x1="${L}" x2="${W - R}" y1="${y(t)}" y2="${y(t)}" stroke="var(--line)"/>`;
+    s += `<text x="${L - 6}" y="${y(t) + 4}" text-anchor="end">${opts.tickFmt(t)}</text>`;
+  }
+  if (opts.zero && lo < 0 && hi > 0) s += `<line x1="${L}" x2="${W - R}" y1="${y(0)}" y2="${y(0)}" stroke="var(--mut)"/>`;
+  for (const se of series) {
+    const vs = idx.map(i => se.values[i]);
+    for (const run of runs(vs)) {
+      if (run.length < 2) continue;
+      s += `<polyline fill="none" stroke="${se.color}" stroke-width="${se.width || 1.8}" points="${run.map(([k, v]) => x(k).toFixed(1) + "," + y(v).toFixed(1)).join(" ")}"/>`;
+    }
+  }
+  const c = idx.indexOf(state.cursor);
+  if (c >= 0) s += `<line x1="${x(c)}" x2="${x(c)}" y1="${T}" y2="${H - B}" stroke="var(--hl)" stroke-dasharray="3 3" opacity=".6"/>`;
+  for (const k of [0, Math.floor(idx.length / 2), idx.length - 1]) {
+    s += `<text x="${x(k)}" y="${H - 6}" text-anchor="middle">${D.dates[idx[k]]}</text>`;
+  }
+  s += `<rect x="${L}" y="${T}" width="${W - L - R}" height="${H - T - B}" fill="transparent" data-hover="1"/></svg>`;
+  el.innerHTML = s;
+  const svg = el.querySelector("svg");
+  svg.addEventListener("mousemove", (e) => {
+    const r = svg.getBoundingClientRect();
+    const px = (e.clientX - r.left) * W / r.width;
+    const k = Math.round((px - L) / (W - L - R) * (idx.length - 1));
+    const i = idx[Math.max(0, Math.min(idx.length - 1, k))];
+    if (i !== state.cursor) { state.cursor = i; render(); }
+  });
+}
+
+function xsChart(el) {
+  const i = state.cursor, W = 460, H = 260, L = 56, R = 8, T = 10, B = 40;
+  const vals = funds.map(f => D.funds[f].premium_bp[i]);
+  const ok = vals.filter(v => v !== null);
+  if (!ok.length) { el.innerHTML = '<p class="det">No premiums on this date.</p>'; return; }
+  let lo = Math.min(0, ...ok), hi = Math.max(0, ...ok); const pad = (hi - lo) * 0.1 || 10; lo -= pad; hi += pad;
+  const y = (v) => T + (H - T - B) * (hi - v) / (hi - lo);
+  const bw = (W - L - R) / funds.length;
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="premium by fund">`;
+  const tick = niceTick(hi - lo, 5);
+  for (let t = Math.ceil(lo / tick) * tick; t <= hi + 1e-12; t += tick) {
+    s += `<line x1="${L}" x2="${W - R}" y1="${y(t)}" y2="${y(t)}" stroke="var(--line)"/><text x="${L - 6}" y="${y(t) + 4}" text-anchor="end">${t.toFixed(0)}</text>`;
+  }
+  s += `<line x1="${L}" x2="${W - R}" y1="${y(0)}" y2="${y(0)}" stroke="var(--mut)"/>`;
+  funds.forEach((f, k) => {
+    const v = vals[k], x0 = L + k * bw + bw * 0.15, w = bw * 0.7;
+    if (v !== null) {
+      const top = Math.min(y(v), y(0)), h = Math.abs(y(v) - y(0));
+      const sel = f === state.fund;
+      s += `<rect x="${x0}" y="${top}" width="${w}" height="${Math.max(h, 1)}" fill="${v >= 0 ? "var(--pos)" : "var(--neg)"}" opacity="${sel ? 1 : .55}" stroke="${sel ? "var(--hl)" : "none"}"><title>${f}: ${v.toFixed(1)} bp</title></rect>`;
+    }
+    s += `<text x="${x0 + w / 2}" y="${H - B + 14}" text-anchor="middle" font-size="9">${f.replace("ETF_", "")}</text>`;
+  });
+  el.innerHTML = s + "</svg>";
+}
+
+function render() {
+  const idx = []; for (let i = state.from; i <= state.to; i++) idx.push(i);
+  const F = D.funds[state.fund];
+  $("fromLbl").textContent = D.dates[state.from]; $("toLbl").textContent = D.dates[state.to];
+  if (state.cursor < state.from || state.cursor > state.to) state.cursor = state.to;
+  lineChart($("chartPrice"), idx, [{ values: F.price, color: "var(--p)", width: 1.4 }, { values: F.fair, color: "var(--fv)", width: 2 }],
+            { label: "price vs fair value", tickFmt: (t) => t.toFixed(3), h: 250 });
+  lineChart($("chartPrem"), idx, [{ values: F.premium_bp, color: "var(--p)", width: 1.6 }],
+            { label: "premium in basis points", tickFmt: (t) => t.toFixed(0), zero: true, h: 260 });
+  xsChart($("chartXs"));
+  const i = state.cursor;
+  $("xsDate").textContent = D.dates[i];
+  $("statsTitle").textContent = `${state.fund} on ${D.dates[i]}`;
+  const items = [
+    ["Closing price", fmt(F.price[i], 4)], ["Fair value", fmt(F.fair[i], 4)], ["Premium", sgn(F.premium_bp[i], 1) + " bp"],
+    ["NAV used", fmt(F.nav[i], 4) + (F.nav_date ? " (" + (F.nav_date[i] || "—") + ")" : "")],
+    ["NAV-model residual std", fmt(F.residual_std_bp, 2) + " bp"],
+    ["Residual MAE", fmt(F.residual_mae_bp, 2) + " bp" + (F.residual_n ? " · n=" + F.residual_n : "")],
+  ];
+  $("stats").innerHTML = items.map(([k, v]) => `<div><b>${k}</b><span class="num">${v}</span></div>`).join("");
+}
+
+function calc() {
+  const g = (id) => parseFloat($(id).value);
+  const out = $("calcOut");
+  try {
+    const fv = FV.fairValue(g("c_nav"), g("c_uref"), g("c_unow"), g("c_pref"), g("c_fxnow"));
+    const pb = FV.premiumBp(g("c_px"), fv);
+    const dc = FV.decompose(g("c_uref"), g("c_unow"), g("c_pref"), g("c_fxnow"));
+    if (!isFinite(fv) || !isFinite(pb)) throw new Error("enter positive numbers in every field");
+    out.innerHTML = `<div><span class="big num">${fv.toFixed(4)}</span> fair value · premium <span class="num big">${sgn(pb, 1)} bp</span></div>` +
+      `<div class="det">Move from the NAV: underlying ${sgn(dc.underlyingBp, 1)} bp + FX ${sgn(dc.fxBp, 1)} bp = ${sgn(dc.totalBp, 1)} bp (log).</div>`;
+  } catch (e) { out.innerHTML = `<span class="err">${e.message}</span>`; }
+}
+
+function header() {
+  if (D.synthetic) {
+    $("banner").innerHTML = "<b>SYNTHETIC DATA.</b> Generated by <code>scripts/make_synthetic_sample.py</code>; not market prices.";
+    $("footer").textContent = "Synthetic demo data.";
+    return;
+  }
+  const m = D.meta, t = m.data_through, s = m.sources;
+  $("banner").innerHTML = `<b>Public market data, updated once a day after the A-share close.</b> ` +
+    `Data through: ETF close <span class="num">${t.etf_close}</span> · QQQ close <span class="num">${t.qqq_close}</span> · ` +
+    `CFETS parity <span class="num">${t.parity}</span> · newest NAV <span class="num">${t.newest_nav}</span>. ` +
+    `If a daily update fails, this page keeps the last good version.`;
+  $("footer").innerHTML = `Generated <span class="num">${m.generated_utc}</span> · sources: ETF ${s.etf}, NAV ${s.nav}, ` +
+    `parity ${s.parity}, QQQ ${s.qqq} · built by <code>python -m qdii_fve.live.update</code>.`;
+}
+
+function init() {
+  header();
+  $("fund").innerHTML = funds.map(f => `<option>${f}</option>`).join("");
+  $("fund").value = state.fund;
+  const n = D.dates.length - 1;
+  for (const id of ["from", "to"]) { $(id).max = n; }
+  $("to").value = n;
+  $("fund").addEventListener("change", (e) => { state.fund = e.target.value; render(); });
+  $("from").addEventListener("input", (e) => { state.from = Math.min(+e.target.value, state.to - 5); e.target.value = state.from; render(); });
+  $("to").addEventListener("input", (e) => { state.to = Math.max(+e.target.value, state.from + 5); e.target.value = state.to; render(); });
+  const c = D.calc_defaults;
+  [["c_nav", c.nav], ["c_uref", c.underlying_ref], ["c_unow", c.underlying_now], ["c_pref", c.parity_ref], ["c_fxnow", c.fx_now], ["c_px", c.price]]
+    .forEach(([id, v]) => { $(id).value = v; $(id).addEventListener("input", calc); });
+  render(); calc();
+}
+init();
+</script>
+</body>
+</html>

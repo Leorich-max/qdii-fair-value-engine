@@ -1,6 +1,9 @@
-# ---- data: never commit real/vendor data; keep ONLY the synthetic sample ----
+# ---- data: keep the synthetic sample and the daily pipeline's NAV/parity histories only ----
+# data/live/ holds published fund NAVs and the official CFETS parity (no market prices); it is the
+# pipeline's memory (first-seen times) and is committed by the daily workflow. Anything else stays out.
 data/*
 !data/sample/
+!data/live/
 
 # ---- secrets & real, calibrated parameters (deliberately withheld) ----
 config.yaml
@@ -26,3 +29,6 @@ venv/
 
 # ---- notebooks: never commit executed outputs ----
 .ipynb_checkpoints/
+
+# ---- local previews (synthetic dashboard build) ----
+outputs/

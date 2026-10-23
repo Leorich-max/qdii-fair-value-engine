@@ -7,9 +7,9 @@ NAVs, or tickers.** Fund identifiers are anonymised (`ETF_01` … `ETF_12`).
 
 Its only purpose is to let every notebook and test run end to end and to
 demonstrate the *mechanics* of the pipeline. It is **not** calibrated to
-reproduce the research figures quoted in the top-level README — those come from
-real, licensed data and are labelled there as backtested/paper-traded. Numbers
-you compute from this sample **will differ** and are illustrative only.
+reproduce the real-data figures in the top-level README and on the dashboard,
+which come from the daily pipeline (`qdii_fve.live`). Numbers you compute from
+this sample **will differ** and are illustrative only.
 
 ## Regenerate
 
@@ -27,14 +27,13 @@ python scripts/make_synthetic_sample.py          # deterministic; same seed => s
 | `SYNTHETIC_usdcnh.csv` | ~260d | `date, usdcnh, cfets_parity` |
 
 The observed `close` deliberately contains **bid-ask bounce** (it lands at the
-bid or the ask around the true mid), so the bounce-decomposition notebook has
-real bounce to remove. `high`/`low` are wider than the spread so the
-Corwin-Schultz estimator has range to work with.
+bid or the ask around the true mid), so a last-trade price is visibly noisier
+than the mid. The fair-value series themselves are computed from NAV, the
+underlying and FX, not from the traded price.
 
 ## Pointing the code at your own data
 
-Replace these files with your own, keeping the same column schema, and set
-`data.path` (and `data.source`) in your `config.yaml`. Public data sources that
-fit each column — fund NAVs, exchange quotes, NASDAQ-100 futures / QFQ QQQ, and
-CFETS central parity — are described in the top-level README. No third-party
-data is redistributed in this repository.
+Replace these files with your own, keeping the same column schema. Public data
+sources fit each column — fund NAVs, exchange quotes, dividend-adjusted QQQ
+closes, and the CFETS central parity. No third-party data is redistributed in
+this repository.

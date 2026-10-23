@@ -1,8 +1,7 @@
 """Premium/discount of market price to reconstructed fair value.
 
-The tradable quantity is the ETF's premium to *reconstructed* fair value, not
-to the stale exchange IOPV. Everything downstream (the relative-value signal,
-the basket demeaning) is built on these premia.
+The quantity of interest is the ETF's premium to *reconstructed* fair value,
+not to the exchange IOPV, which does not move while the US underlying is closed.
 """
 
 from __future__ import annotations
@@ -31,3 +30,10 @@ def premium_series(price: pd.Series, fair_value: pd.Series) -> pd.Series:
     if (aligned <= 0).any().any():
         raise ValueError("price and fair_value must be positive")
     return (np.log(aligned["px"] / aligned["fv"]) * 1e4).rename("premium_bps")
+
+
+def premium_bps_panel(price: pd.DataFrame, fair_value: pd.DataFrame) -> pd.DataFrame:
+    """Log premium in basis points for a dates x funds panel (NaN where either side is missing)."""
+    if (price <= 0).any().any() or (fair_value <= 0).any().any():
+        raise ValueError("price and fair_value must be positive")
+    return np.log(price / fair_value) * 1e4
