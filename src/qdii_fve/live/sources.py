@@ -190,7 +190,7 @@ def parse_yahoo(text):
 
 
 def fetch_qqq_yahoo():
-    url = "https://query1.finance.yahoo.com/v8/finance/chart/QQQ?range=2y&interval=1d&events=div"
+    url = "https://query1.finance.yahoo.com/v8/finance/chart/QQQ?range=5y&interval=1d&events=div"
     return parse_yahoo(http_get(url))
 
 

@@ -28,13 +28,13 @@ flowchart TD
 
 ## Validation
 
-The same conventions are checked against what the funds actually publish. For each pair of consecutive NAVs, the NAV return is compared with QQQ's total return times the parity move over the same valuation dates. Since March 2025 the residual standard deviation is about **4–5 bp for 11 of the 12 funds** (mean absolute error about 3 bp), and the dashboard shows each fund's figure. An earlier study on one fund found 3.2 bp over 151 days. One fund (513300) is a clear outlier at about 14 bp, and the dashboard shows it as is. This measures how well valuation-date and currency conventions explain published NAVs; it is not a pricing error at any moment and not a trading result. [Derivation and validation scope](docs/fair_value_derivation.md)
+The same conventions are checked against what the funds actually publish. For each pair of consecutive NAVs, the NAV return is compared with QQQ's total return times the parity move over the same valuation dates. Since December 2023 (about 700 NAVs per fund) the residual standard deviation is **4–6 bp for 11 of the 12 funds** (mean absolute error about 3 bp), and the dashboard shows each fund's figure. An earlier study on one fund found 3.2 bp over 151 days. One fund (513300) is a clear outlier at about 17 bp, and the dashboard shows it as is. This measures how well valuation-date and currency conventions explain published NAVs; it is not a pricing error at any moment and not a trading result. [Derivation and validation scope](docs/fair_value_derivation.md)
 
 ## The dashboard
 
 A static page (no server, no install), rebuilt every trading day from public data:
 
-- **Price vs fair value** for any of the 12 funds and any date range since March 2025;
+- **Price vs fair value** for any of the 12 funds and any date range since December 2023 (a month after the youngest fund listed);
 - **Premium to fair value** in basis points, with a shared cursor;
 - **All funds on one date**, so the premium cross-section is visible at a glance;
 - **NAV used and validation**: which NAV valuation date each day relies on, and each fund's NAV-model residual;

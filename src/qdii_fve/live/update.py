@@ -19,7 +19,8 @@ from pathlib import Path
 
 from qdii_fve.live import model, sources
 
-START = "2025-03-03"  # all 12 funds listed by then
+# youngest fund (513870) listed 2023-11-02; one month of buffer skips its thin first weeks
+START = "2023-12-01"
 NAV_FIELDS = ["code", "nav_date", "nav", "first_seen_utc", "revised_utc"]
 PARITY_FIELDS = ["date", "usdcny", "source", "first_seen_utc"]
 
