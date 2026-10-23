@@ -5,17 +5,16 @@ build-backend = "hatchling.build"
 [project]
 name = "qdii-fair-value-engine"
 version = "0.1.0"
-description = "Fair-value engine and relative-value research toolkit for China-listed NASDAQ-100 QDII ETFs (research artifact; strategy parameters withheld)."
+description = "Fair-value engine and premium dashboard for China-listed NASDAQ-100 QDII ETFs (synthetic sample data)."
 readme = "README.md"
 requires-python = ">=3.11"
 license = { file = "LICENSE" }
 authors = [{ name = "leolisingapore-hue" }]
-keywords = ["quant", "etf", "qdii", "fair-value", "relative-value", "market-microstructure"]
+keywords = ["quant", "etf", "qdii", "fair-value", "premium", "nav"]
 
 dependencies = [
     "numpy==2.1.3",
     "pandas==2.2.3",
-    "scipy==1.14.1",
     "pyyaml==6.0.2",
 ]
 

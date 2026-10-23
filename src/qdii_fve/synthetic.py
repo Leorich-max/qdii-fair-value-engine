@@ -8,12 +8,11 @@ The generator deliberately bakes in the structure each stage needs:
 
 * a common underlying (NASDAQ-100 proxy) and USDCNH, so the fair-value engine
   has something to reconstruct;
-* per-fund mean-reverting premia with a shared component, so the relative-value
-  signal has cross-sectional dispersion to trade;
-* a fund-specific bid-ask spread and an explicit **bid-ask bounce** in the
-  observed close, so the bounce decomposition has real bounce to remove;
-* liquidity that varies across funds (thin vs liquid), so the cost and capacity
-  stages see a realistic spread of spreads and volumes.
+* per-fund mean-reverting premia with a shared component, so premia differ
+  across funds and over time;
+* a fund-specific bid-ask spread and a **bid-ask bounce** in the observed close,
+  so a last-trade price is visibly noisier than the mid;
+* liquidity that varies across funds (thin vs liquid).
 
 All randomness flows from a single seed; the same seed yields identical output.
 """

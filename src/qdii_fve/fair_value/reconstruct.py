@@ -1,33 +1,15 @@
 """Real-time fair-value reconstruction for US-underlying QDII ETFs.
 
-The problem
------------
-A China-listed ETF tracking a US index (here, the NASDAQ-100) publishes an
-exchange IOPV that is **stale during A-share hours**: the US underlying is
-closed, so the vendor IOPV simply carries the prior US close and does not move
-with the fund's true economic value. Trading the premium against a stale IOPV
-is trading against a number that is hours out of date.
+The current research uses QQQ, with consistently dividend-adjusted NAV-date
+reference closes, and USD/CNH relative to the NAV-date CFETS parity:
+    FV(t) = NAV0 * (QQQ(t) / QQQ_reference) * (FX(t) / FX_reference)
+NAV valuation and availability timestamps are distinct; all inputs require
+appropriate alignment and freshness. QQQ data may be stale or unavailable.
 
-The reconstruction
-------------------
-The fund's economic value at intraday time ``t`` is the last published NAV,
-scaled by how far the underlying and the currency have moved since the NAV was
-struck::
-
-    FV(t) = NAV0 * (U(t) / U0) * (FX(t) / FX0)
-
-where
-
-* ``NAV0`` is the rolled-forward NAV (see :mod:`qdii_fve.fair_value.nav`),
-* ``U`` is the NASDAQ-100 level -- NASDAQ-100 futures intraday, or the
-  dividend-adjusted (QFQ) QQQ close for the NAV reference,
-* ``FX`` is USDCNH, struck against the CFETS central parity on the NAV date.
-
-Because the US market is closed during A-share hours, ``U(t)`` is effectively
-the last US close and moves day-to-day rather than minute-to-minute; the live
-variation intraday comes through futures and USDCNH. Validated against realised
-next-day NAV, the residual standard deviation is on the order of a few bp (see
-notebook ``01_fair_value_engine``).
+The public functions below accept generic reference levels. Synthetic examples
+illustrate mechanics; they do not reproduce historical performance. The reported
+3.2 bp statistic is a historical daily NAV-return model residual, not a
+second-by-second market-price error. See docs/fair_value_derivation.md.
 """
 
 from __future__ import annotations

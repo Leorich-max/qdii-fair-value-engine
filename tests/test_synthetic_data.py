@@ -50,7 +50,7 @@ def test_value_sanity() -> None:
 
 
 def test_cross_sectional_dispersion_exists() -> None:
-    # The relative-value signal needs the funds to differ from each other.
+    # The funds must differ from each other for premia to be informative.
     bars = generate_sample(seed=0, n_days=120)["daily_bars"]
     wide = bars.pivot(index="date", columns="etf_id", values="close")
     daily_std = wide.pct_change().std(axis=1)

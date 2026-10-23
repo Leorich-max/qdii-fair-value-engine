@@ -1,7 +1,6 @@
 """Smoke test: the package imports and exposes a version.
 
-Keeps CI green from the first commit; real coverage for the fair-value engine
-and the cost model is added alongside those modules.
+Fair-value behaviour itself is covered in ``test_fair_value.py``.
 """
 
 import qdii_fve
